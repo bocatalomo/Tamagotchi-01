@@ -208,6 +208,62 @@ function App() {
         loadedPet.isSick = isSick;
       }
 
+      // Restaurar estado de sueño si estaba durmiendo
+      if (loadedPet.isSleeping && loadedPet.sleepStartTime && loadedPet.sleepStartEnergy !== null) {
+        setIsSleeping(true);
+        setAnimation('blink');
+        sleepStartEnergyRef.current = loadedPet.sleepStartEnergy;
+        sleepStartTimeRef.current = loadedPet.sleepStartTime;
+
+        // Calcular cuánto tiempo ha dormido
+        const timeSlept = Date.now() - loadedPet.sleepStartTime;
+        const totalSleepTime = 300000; // 5 minutos
+
+        // Si ya completó el ciclo de sueño, actualizar energía al 100%
+        if (timeSlept >= totalSleepTime) {
+          loadedPet.energy = 100;
+        } else {
+          // Calcular energía basándose en tiempo dormido offline
+          const sleepProgress = Math.min(timeSlept / totalSleepTime, 1);
+          const energyToRecover = 100 - loadedPet.sleepStartEnergy;
+          loadedPet.energy = Math.min(100, loadedPet.sleepStartEnergy + (energyToRecover * sleepProgress));
+
+          // Continuar el intervalo de sueño desde donde se quedó
+          const updateInterval = 1000;
+          sleepIntervalRef.current = setInterval(() => {
+            setPet(prev => {
+              const currentTimeSlept = Date.now() - sleepStartTimeRef.current;
+              const currentProgress = Math.min(currentTimeSlept / totalSleepTime, 1);
+              const newEnergy = Math.min(100, sleepStartEnergyRef.current + (energyToRecover * currentProgress));
+
+              return {
+                ...prev,
+                energy: newEnergy
+              };
+            });
+          }, updateInterval);
+
+          // Timeout para el tiempo restante
+          const remainingTime = totalSleepTime - timeSlept;
+          if (remainingTime > 0) {
+            sleepTimeoutRef.current = setTimeout(() => {
+              if (sleepIntervalRef.current) {
+                clearInterval(sleepIntervalRef.current);
+                sleepIntervalRef.current = null;
+              }
+
+              setPet(prev => ({
+                ...prev,
+                energy: 100,
+                happiness: Math.min(100, prev.happiness + 10)
+              }));
+
+              sleepTimeoutRef.current = null;
+            }, remainingTime);
+          }
+        }
+      }
+
       // Actualizar lastUpdate al tiempo actual
       loadedPet.lastUpdate = Date.now();
 
