@@ -185,8 +185,14 @@ const SkateGame = ({ onGameEnd }) => {
       if (game.skater.isHolding && game.skater.velocityY < 0) {
         game.skater.velocityY += game.skater.gravity * 0.5; // Gravedad reducida mientras mantiene
       } else {
-        // Gravedad normal cuando no mantiene o está cayendo
-        game.skater.velocityY += game.skater.gravity;
+        // Si soltó o está cayendo, aplicar gravedad fuerte para cancelar el salto
+        if (game.skater.velocityY < 0) {
+          // Si aún está subiendo pero soltó, aplicar gravedad extra para frenar rápido
+          game.skater.velocityY += game.skater.gravity * 1.5;
+        } else {
+          // Gravedad normal cuando ya está cayendo
+          game.skater.velocityY += game.skater.gravity;
+        }
       }
 
       game.skater.y += game.skater.velocityY;
