@@ -100,8 +100,8 @@ function App() {
       const timeElapsed = Date.now() - (loadedPet.lastUpdate || Date.now());
       const minutesElapsed = timeElapsed / (1000 * 60);
 
-      // Calcular edad inmediatamente al cargar (1 hora real = 1 día de mascota)
-      loadedPet.age = Math.floor((Date.now() - loadedPet.birthDate) / (1000 * 60 * 60));
+      // Calcular edad en días reales (24 horas = 1 día)
+      loadedPet.age = Math.floor((Date.now() - loadedPet.birthDate) / (1000 * 60 * 60 * 24));
 
       // Aplicar deterioro offline SOLO si NO está durmiendo y NO está en etapa egg
       if (!loadedPet.isSleeping && loadedPet.stage !== 'egg' && loadedPet.isAlive) {
@@ -457,17 +457,17 @@ function App() {
   }, [showNameInput, showPetSelector, pet.isAlive]);
 
   // ==================== SISTEMA DE EDAD ====================
-  // 1 hora real = 1 día de mascota
-  // El intervalo se ejecuta cada minuto para mantener la edad actualizada
+  // Edad en días reales (24 horas = 1 día)
+  // El intervalo se ejecuta cada hora para mantener la edad actualizada
   useEffect(() => {
     if (showNameInput || showPetSelector || !pet.isAlive) return;
 
     const ageInterval = setInterval(() => {
       setPet(prev => ({
         ...prev,
-        age: Math.floor((Date.now() - prev.birthDate) / (1000 * 60 * 60)) // 1 hora real = 1 día
+        age: Math.floor((Date.now() - prev.birthDate) / (1000 * 60 * 60 * 24)) // 24 horas = 1 día
       }));
-    }, 60000); // Actualizar cada minuto
+    }, 3600000); // Actualizar cada hora (3600000 ms)
 
     return () => clearInterval(ageInterval);
   }, [showNameInput, showPetSelector, pet.isAlive]);
