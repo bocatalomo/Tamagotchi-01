@@ -1,6 +1,7 @@
 import PixelPet from './PixelPet';
 import StatBar from './StatBar';
 import ActionButton from './ActionButton';
+import Poop from './Poop';
 import './HomeScreen.css';
 
 const HomeScreen = ({
@@ -17,7 +18,9 @@ const HomeScreen = ({
   onMedicine,
   onTreat,
   onPlay,
-  isSleeping
+  isSleeping,
+  poops,
+  onCleanPoop
 }) => {
   const getTimeOfDay = () => {
     const hour = new Date().getHours();
@@ -84,7 +87,7 @@ const HomeScreen = ({
       </div>
 
       {/* Contenedor principal de la mascota */}
-      <div className="pet-container">
+      <div className="pet-container" style={{ position: 'relative' }}>
 
         {/* Display de la mascota */}
         <div className="pet-display-home">
@@ -106,6 +109,17 @@ const HomeScreen = ({
             mood={pet.mood}
           />
         </div>
+
+        {/* Cacas dentro del contenedor */}
+        {poops && poops.map(poop => (
+          <Poop
+            key={poop.id}
+            id={poop.id}
+            x={poop.x}
+            y={poop.y}
+            onClean={onCleanPoop}
+          />
+        ))}
 
         {/* Mensaje de la mascota */}
         {message && (
