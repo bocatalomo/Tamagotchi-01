@@ -701,7 +701,6 @@ function App() {
 
   const giveMedicine = useCallback(() => {
     if (!pet.isAlive) return showMessage('Tu mascota ha fallecido...');
-    if (!pet.isSick && pet.mood !== 'enfermo') return showMessage('Tu mascota no está enferma');
     if (inventory.medicine <= 0) return showMessage('Sin medicina! Ve a la tienda');
 
     // Despertar a la mascota si está durmiendo
@@ -725,7 +724,7 @@ function App() {
       };
     });
     showMessage('Medicina administrada! Tu mascota se siente mejor');
-  }, [pet.isAlive, pet.isSick, pet.mood, inventory.medicine, showMessage, clearSleepState]);
+  }, [pet.isAlive, inventory.medicine, showMessage, clearSleepState]);
 
   const giveTreat = useCallback(() => {
     if (!pet.isAlive) return showMessage('Tu mascota ha fallecido...');
