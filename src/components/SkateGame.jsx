@@ -145,11 +145,6 @@ const SkateGame = ({ onGameEnd }) => {
 
     // Iniciar juego
     if (isPlaying && !game.gameRunning) {
-      game.skater.y = game.groundY - game.skater.height;
-      game.skater.velocityY = 0;
-      game.skater.isGrounded = true;
-      game.skater.isHolding = false;
-      game.skater.jumpsRemaining = 2;
       game.platforms = [];
       game.obstacles = [];
       game.coins = [];
@@ -159,14 +154,30 @@ const SkateGame = ({ onGameEnd }) => {
       game.lastPlatformX = -200;
       game.lastObstacleX = 600;
       game.lastCoinX = 300;
-      game.gameRunning = true;
 
-      // Crear plataformas iniciales
+      // Crear plataforma inicial justo debajo del jugador (sin hueco al inicio)
+      game.platforms.push({
+        x: 0,
+        y: game.groundY,
+        width: 250,
+        height: 20
+      });
+      game.lastPlatformX = 250;
+
+      // Crear resto de plataformas
       for (let i = 0; i < 10; i++) {
         addPlatform();
       }
 
-      // Crear algunos obstáculos
+      // Posicionar jugador sobre la primera plataforma
+      game.skater.x = 100;
+      game.skater.y = game.groundY - game.skater.height;
+      game.skater.velocityY = 0;
+      game.skater.isGrounded = true;
+      game.skater.isHolding = false;
+      game.skater.jumpsRemaining = 2;
+
+      // Crear algunos obstáculos (no en las primeras 2 plataformas)
       for (let i = 0; i < 3; i++) {
         addObstacle();
       }
@@ -175,6 +186,8 @@ const SkateGame = ({ onGameEnd }) => {
       for (let i = 0; i < 8; i++) {
         addCoin();
       }
+
+      game.gameRunning = true;
     }
 
     // Actualizar física
